@@ -253,7 +253,7 @@ class Api:
 
     def api_input_image(self) -> FileResponse:
         if self.config.input is None:
-            raise HTTPException(status_code=200, detail="No input image configured")
+            raise HTTPException(status_code=404, detail="No input image configured")
 
         if self.config.input.is_file():
             return FileResponse(self.config.input)

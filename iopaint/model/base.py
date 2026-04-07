@@ -65,7 +65,7 @@ class InpaintModel:
 
         # logger.info(f"final forward pad size: {pad_image.shape}")
 
-        image, mask = self.forward_pre_process(image, mask, config)
+        pad_image, pad_mask = self.forward_pre_process(pad_image, pad_mask, config)
 
         result = self.forward(pad_image, pad_mask, config)
         result = result[0:origin_height, 0:origin_width, :]

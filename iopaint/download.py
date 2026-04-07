@@ -75,7 +75,7 @@ def get_sd_model_type(model_abs_path: str) -> Optional[ModelType]:
 
 @lru_cache()
 def get_sdxl_model_type(model_abs_path: str) -> Optional[ModelType]:
-    if "inpaint" in model_abs_path:
+    if "inpaint" in Path(model_abs_path).name.lower():
         model_type = ModelType.DIFFUSERS_SDXL_INPAINT
     else:
         # load once to check num_in_channels
