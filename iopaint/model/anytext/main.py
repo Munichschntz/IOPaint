@@ -28,7 +28,7 @@ masked_image = cv2.resize(masked_image, (512, 512))
 
 # results: list of rgb ndarray
 results, rtn_code, rtn_warning = pipe(
-    prompt='A cake with colorful characters that reads "EVERYDAY", best quality, extremely detailed,4k, HD, supper legible text,  clear text edges,  clear strokes, neat writing, no watermarks',
+    prompt='A cake with colorful characters that reads "EVERYDAY", best quality, extremely detailed,4k, HD, super legible text,  clear text edges,  clear strokes, neat writing, no watermarks',
     negative_prompt="low-res, bad anatomy, extra digit, fewer digits, cropped, worst quality, low quality, watermark, unreadable text, messy words, distorted text, disorganized writing, advertising picture",
     image=rgb_image,
     masked_image=masked_image,

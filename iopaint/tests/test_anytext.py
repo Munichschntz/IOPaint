@@ -28,7 +28,7 @@ def test_anytext(device):
 
     cfg = get_config(
         strategy=HDStrategy.ORIGINAL,
-        prompt='Characters written in chalk on the blackboard that says "DADDY", best quality, extremely detailed,4k, HD, supper legible text,  clear text edges,  clear strokes, neat writing, no watermarks',
+        prompt='Characters written in chalk on the blackboard that says "DADDY", best quality, extremely detailed,4k, HD, super legible text,  clear text edges,  clear strokes, neat writing, no watermarks',
         negative_prompt="low-res, bad anatomy, extra digit, fewer digits, cropped, worst quality, low quality, watermark, unreadable text, messy words, distorted text, disorganized writing, advertising picture",
         sd_steps=sd_steps,
         sd_guidance_scale=9.0,
