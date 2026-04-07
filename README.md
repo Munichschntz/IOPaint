@@ -58,6 +58,15 @@
 
 ## Quick Start
 
+### Windows 11 helper scripts
+
+If you are running from a local checkout on Windows 11, use the ready-to-run scripts in scripts/user_scripts:
+
+- Native Python (no Docker): see scripts/user_scripts/win_native_setup_cpu.bat and scripts/user_scripts/win_native_setup_cuda.bat
+- Docker: see scripts/user_scripts/win_docker_build_cpu.bat, scripts/user_scripts/win_docker_start_cpu.bat, scripts/user_scripts/win_docker_build_gpu.bat, scripts/user_scripts/win_docker_start_gpu.bat
+
+Detailed usage is documented in scripts/README.md.
+
 ### Start webui
 
 IOPaint provides a convenient webui for using the latest AI models to edit your images.
