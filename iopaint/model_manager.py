@@ -38,6 +38,11 @@ class ModelManager:
         self.enable_powerpaint_v2 = kwargs.get("enable_powerpaint_v2", False)
 
         self.model = self.init_model(name, device, **kwargs)
+        self._reset_runtime_flags()
+
+    def _reset_runtime_flags(self):
+        self._lcm_lora_loaded = False
+        self._lcm_lora_enabled = False
 
     @property
     def current_model(self) -> ModelInfo:
@@ -101,10 +106,9 @@ class ModelManager:
         Returns:
             BGR image
         """
-        if config.enable_controlnet:
-            self.switch_controlnet_method(config)
-        if config.enable_brushnet:
-            self.switch_brushnet_method(config)
+        # Always run toggle handlers so disabling features in request config works.
+        self.switch_controlnet_method(config)
+        self.switch_brushnet_method(config)
 
         self.enable_disable_powerpaint_v2(config)
         self.enable_disable_lcm_lora(config)
@@ -137,6 +141,7 @@ class ModelManager:
             self.model = self.init_model(
                 new_name, switch_mps_device(new_name, self.device), **self.kwargs
             )
+            self._reset_runtime_flags()
         except Exception as e:
             self.name = old_name
             self.controlnet_method = old_controlnet_method
@@ -144,6 +149,7 @@ class ModelManager:
             self.model = self.init_model(
                 old_name, switch_mps_device(old_name, self.device), **self.kwargs
             )
+            self._reset_runtime_flags()
             raise e
 
     def switch_brushnet_method(self, config):
@@ -184,6 +190,7 @@ class ModelManager:
                 pipe_components=pipe_components,
                 **self.kwargs,
             )
+            self._reset_runtime_flags()
 
             if not config.enable_brushnet:
                 logger.info("BrushNet Disabled")
@@ -223,6 +230,7 @@ class ModelManager:
                 pipe_components=pipe_components,
                 **self.kwargs,
             )
+            self._reset_runtime_flags()
             if not config.enable_controlnet:
                 logger.info("Disable controlnet")
             else:
@@ -242,6 +250,7 @@ class ModelManager:
                 pipe_components=pipe_components,
                 **self.kwargs,
             )
+            self._reset_runtime_flags()
             if config.enable_powerpaint_v2:
                 logger.info("Enable PowerPaintV2")
             else:
@@ -249,20 +258,22 @@ class ModelManager:
 
     def enable_disable_lcm_lora(self, config: InpaintRequest):
         if self.available_models[self.name].support_lcm_lora:
-            # TODO: change this if load other lora is supported
-            lcm_lora_loaded = bool(self.model.model.get_list_adapters())
             if config.sd_lcm_lora:
-                if not lcm_lora_loaded:
+                if not self._lcm_lora_loaded:
                     logger.info("Load LCM LORA")
                     self.model.model.load_lora_weights(
                         self.model.lcm_lora_id,
                         weight_name="pytorch_lora_weights.safetensors",
                         local_files_only=is_local_files_only(),
                     )
-                else:
+                    self._lcm_lora_loaded = True
+                    self._lcm_lora_enabled = True
+                elif not self._lcm_lora_enabled:
                     logger.info("Enable LCM LORA")
                     self.model.model.enable_lora()
+                    self._lcm_lora_enabled = True
             else:
-                if lcm_lora_loaded:
+                if self._lcm_lora_enabled:
                     logger.info("Disable LCM LORA")
                     self.model.model.disable_lora()
+                    self._lcm_lora_enabled = False
