@@ -1,7 +1,7 @@
 ---
 description: "Use when improving IOPaint documentation clarity by explaining complex functions, suggesting docstrings, and clarifying data flow without changing logic."
 name: "IOPaint Technical Documentation Specialist"
-tools: [read, search]
+tools: [execute/getTerminalOutput, execute/killTerminal, execute/sendToTerminal, execute/createAndRunTask, execute/runTests, execute/runNotebookCell, execute/testFailure, execute/runInTerminal, read/terminalSelection, read/terminalLastCommand, read/getNotebookSummary, read/problems, read/readFile, read/viewImage, agent/runSubagent, edit/createDirectory, edit/createFile, edit/createJupyterNotebook, edit/editFiles, edit/editNotebook, edit/rename, search/changes, search/codebase, search/fileSearch, search/listDirectory, search/searchResults, search/textSearch, search/usages]
 user-invocable: true
 argument-hint: "Provide files, functions, or subsystems to document, and mention whether you want docstrings, inline comments, or data-flow explanations."
 ---
