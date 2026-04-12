@@ -32,7 +32,7 @@ Primary backend modules covered:
 - `iopaint/__init__.py` configures runtime environment variables and invokes Typer CLI.
 
 2. Startup wiring and validation
-- `iopaint/cli.py` defines commands (`start`, `run`, `download`, `list`).
+- `iopaint/cli.py` defines commands (`start`, `run`, `download`, `list`, `install-plugins-packages`, `start-web-config`).
 - `iopaint/runtime.py` validates device selection and configures model cache paths.
 
 3. Server composition
@@ -60,6 +60,12 @@ Primary backend modules covered:
 - `dump_environment_info()`: collects platform and dependency versions.
 - `check_device(device)`: normalizes unsupported device selections to CPU when required.
 - `setup_model_dir(path)`: expands/creates model directory and sets `U2NET_HOME` and `XDG_CACHE_HOME`.
+
+### Runtime caveats
+
+- Device checks may downgrade unsupported `cuda` or `mps` selections to `cpu`.
+- Offline mode is enabled by `--local-files-only` through `TRANSFORMERS_OFFLINE=1` and `HF_HUB_OFFLINE=1`.
+- `cpu_textencoder` is only applied when runtime device is CUDA.
 
 ## CLI Command Flows
 
@@ -97,13 +103,22 @@ Key responsibilities:
 
 Representative endpoints:
 
-- `POST /api/v1/inpaint`
+- `POST /api/v1/gen-info`
+- `GET /api/v1/server-config`
+- `GET /api/v1/samplers`
 - `GET/POST /api/v1/model`
+- `GET /api/v1/inputimage`
+- `POST /api/v1/inpaint`
+- `POST /api/v1/switch_plugin_model`
 - `POST /api/v1/run_plugin_gen_mask`
 - `POST /api/v1/run_plugin_gen_image`
 - `POST /api/v1/adjust_mask`
 - `POST /api/v1/save_image`
-- `GET /api/v1/server-config`
+
+Websocket events (mounted at `/ws` via Socket.IO):
+
+- `diffusion_progress` for per-step progress updates.
+- `diffusion_finish` when inference completes.
 
 ## Data Contracts and Capability Model
 
@@ -117,6 +132,18 @@ Important types:
 - `InpaintRequest`: inpaint request payload for both erase and diffusion paths.
 
 `ModelInfo` computed fields drive feature availability in both backend behavior and frontend controls.
+
+Common capability flags and what they gate:
+
+- `need_prompt`: show/hide prompt controls.
+- `support_strength`: enable denoising strength controls.
+- `support_outpainting`: allow extender/outpainting workflows.
+- `support_lcm_lora`: allow LCM LoRA acceleration toggle.
+- `support_controlnet`: allow ControlNet options.
+- `support_brushnet`: allow BrushNet options.
+- `support_powerpaint_v2`: allow PowerPaint v2 toggle.
+
+Keeping these flags aligned with frontend controls avoids runtime mismatches (for example, showing controls unsupported by the selected model).
 
 ## Model Discovery and Download
 
@@ -189,6 +216,12 @@ Some plugin configurations can be switched at runtime through API calls.
 ## File Manager
 
 `iopaint/file_manager/file_manager.py` is enabled when `input` points to a directory.
+
+Activation and constraints:
+
+- CLI only builds file manager routes when `--input` is a directory.
+- If `--input` is a directory, `--output-dir` is required.
+- If `--input` is a single file (or omitted), file manager routes are not mounted.
 
 It exposes endpoints for:
 

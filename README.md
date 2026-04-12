@@ -112,7 +112,33 @@ iopaint run --model=lama --device=cpu \
 `--image` is the folder containing input images, `--mask` is the folder containing corresponding mask images.
 When `--mask` is a path to a mask file, all images will be processed using this mask.
 
+`--config` accepts a JSON object that maps to request options in `InpaintRequest`.
+Use it to set diffusion/erase options once for all images in the batch.
+
+`--concat` saves a side-by-side image that contains input image, mask, and output result for quick review.
+
+If `--mask` is a directory, filenames are matched to `--image` by name. Mask sizes are auto-resized to match each image.
+
+You can generate plugin dependencies before using plugin-enabled workflows with:
+
+```bash
+iopaint install-plugins-packages
+```
+
+You can launch the config helper UI with:
+
+```bash
+iopaint start-web-config --config-file config.json
+```
+
 You can see more information about the available models and plugins supported by IOPaint below.
+
+## Documentation
+
+- Backend architecture and lifecycle: [docs/backend-internals.md](docs/backend-internals.md)
+- Backend API endpoints and websocket events: [docs/api-reference.md](docs/api-reference.md)
+- Inpainting request fields and constraints: [docs/request-schema.md](docs/request-schema.md)
+- Frontend architecture and data flow: [web_app/docs/architecture.md](web_app/docs/architecture.md)
 
 ## Development
 
@@ -145,3 +171,5 @@ python3 main.py start --model lama --port 8080
 Then you can visit `http://localhost:5173/` for development.
 The frontend code will automatically update after being modified,
 but the backend needs to restart the service after modifying the python code.
+
+For frontend internals and architecture, see [web_app/README.md](web_app/README.md) and [web_app/docs/architecture.md](web_app/docs/architecture.md).
